@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Artistic Style Transfer</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+      }
+      .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        margin-top: 50px;
+      }
+      .upload-container {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+      .upload-box {
+        width: 300px;
+        height: 300px;
+        padding: 20px;
+        border: 2px dashed #ccc;
+        cursor: pointer;
+        text-align: center;
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+      }
+      .upload-box:hover {
+        background-color: #f0f0f0;
+      }
+      .upload-box input[type="file"] {
+        display: none;
+      }
+      .image-preview {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+      }
+      .button-container {
+        margin-top: 20px;
+      }
+      .button {
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        cursor: pointer;
+        font-size: 16px;
+        border-radius: 5px;
+        text-decoration: none;
+      }
+      .button:hover {
+        background-color: #0056b3;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Artistic Style Transfer</h1>
+      <form method="POST" enctype="multipart/form-data" action="/">
+        <div class="upload-container">
+          <div class="upload-box" id="content-box">
+            <label for="content_image" class="upload-label"
+              >Upload Content Image</label
+            >
+            <input
+              type="file"
+              id="content_image"
+              name="content_image"
+              accept="image/*"
+              onchange="previewImage(event, 'content-preview')"
+            />
+            <img
+              id="content-preview"
+              class="image-preview"
+              alt="Content Image Preview"
+            />
+          </div>
+          <div class="upload-box" id="style-box">
+            <label for="style_image" class="upload-label"
+              >Upload Style Image</label
+            >
+            <input
+              type="file"
+              id="style_image"
+              name="style_image"
+              accept="image/*"
+              onchange="previewImage(event, 'style-preview')"
+            />
+            <img
+              id="style-preview"
+              class="image-preview"
+              alt="Style Image Preview"
+            />
+          </div>
+        </div>
+        <div class="button-container">
+          <button type="submit" class="button">Transfer Style</button>
+        </div>
+      </form>
+
+      {% if image_url %}
+      <h2>Stylized Image</h2>
+      <img src="{{ image_url }}" class="image-preview" alt="Stylized Image" />
+      <div class="button-container">
+        <a href="{{ url_for('download') }}" class="button">Download Image</a>
+      </div>
+      {% endif %}
+    </div>
+
+    <script>
+      // Function to preview selected image inside the upload box
+      function previewImage(event, previewId) {
+        const reader = new FileReader();
+        reader.onload = function () {
+          const output = document.getElementById(previewId);
+          output.src = reader.result;
+          output.style.display = "block";
+          document.querySelector(
+            `#${previewId}`
+          ).previousElementSibling.style.display = "none"; // Hide label
+        };
+        reader.readAsDataURL(event.target.files[0]);
+      }
+
+      // Click event listener to trigger file input click when clicking anywhere on the upload box
+      document.querySelectorAll(".upload-box").forEach((box) => {
+        box.addEventListener("click", () => {
+          const input = box.querySelector('input[type="file"]');
+          input.click();
+        });
+      });
+    </script>
+  </body>
+</html>
